@@ -51,7 +51,7 @@ class Chessboard:
             pygame.font.init()
             self.font = pygame.font.SysFont(None, 24)
             # Draw knight symbol on current position
-            self.knight_font = pygame.font.SysFont("applesymbols", 28) # font that supports chess symbols
+            self.knight_font = pygame.font.SysFont("segoeuisymbol", 28)  # font that supports chess symbols
             self.screenSize = self.gridSize * self.cellSize
             self.screen = pygame.display.set_mode((self.screenSize, self.screenSize))
             pygame.display.set_caption("Chessboard")

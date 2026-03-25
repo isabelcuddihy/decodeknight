@@ -4,15 +4,14 @@ import numpy as np
 import random
 
 class Chessboard:
-    def __init__(self, GUI=True, render_delay_sec=0.1, grid_length=6, grid_width = 6, starting_knight_pos=(0, 0), obstacle_boxes=5):
+    def __init__(self, GUI=True, render_delay_sec=0.1, grid_length=6, grid_width = 6, obstacle_boxes=5):
         # Constants
         self.gridSize = grid_length #eventually need to do something with width too for m x n grids
         self.cellSize = 40
         self.screenSize = self.gridSize * self.cellSize
         self.fps = 60
         self.sleeptime = render_delay_sec
-        self.currentKnightPos = [0, 0]
-        self.placedKnights = [(self.currentKnightPos[0], self.currentKnightPos[1])] # List to track prev ious knight positions in order (position, move number)
+        self.placedKnights = [] # List to track prev ious knight positions in order (position, move number)
         self.obstacle_boxes = obstacle_boxes
         
 
@@ -38,6 +37,7 @@ class Chessboard:
         self.screen = None
         self.clock = None
         self.grid = np.full((self.gridSize, self.gridSize), -1)
+        self.currentKnightPos = [0, 0]
         self.moveChoice = 0 # Index to track the current move choice from self.moves
         self.done = False
 
@@ -51,7 +51,7 @@ class Chessboard:
             pygame.font.init()
             self.font = pygame.font.SysFont(None, 24)
             # Draw knight symbol on current position
-            self.knight_font = pygame.font.SysFont("applesymbols", 28) # font that supports chess symbols
+            self.knight_font = pygame.font.SysFont("segoeuisymbol", 28)  # font that supports chess symbols
             self.screenSize = self.gridSize * self.cellSize
             self.screen = pygame.display.set_mode((self.screenSize, self.screenSize))
             pygame.display.set_caption("Chessboard")
@@ -145,31 +145,28 @@ class Chessboard:
         return grid
 
     def _refresh(self):
-        if not self.screen:
-            return
         self.screen.fill(self.white)
         self._drawGrid(self.screen)
 
-        # Draw visited squares with move numbers
+        # Draw the current state of the grid
         for i in range(self.gridSize):
             for j in range(self.gridSize):
                 if self.grid[i, j] != -1:
                     rect = pygame.Rect(j * self.cellSize, i * self.cellSize, self.cellSize, self.cellSize)
-                    pygame.draw.rect(self.screen, self.status[1], rect)
+                    pygame.draw.rect(self.screen, self.status[1], rect) #visited squares are light blue
+                    # draw move number on top of the filled cell
                     move_number = self.grid[i, j]
                     if move_number > 0:
                         text = self.font.render(str(move_number), True, self.black)
                         text_rect = text.get_rect(center=rect.center)
                         self.screen.blit(text, text_rect)
-
-        # Draw knight symbol on current position - outside the loop
-        knight_text = self.knight_font.render("♞", True, self.black)
-        knight_rect = knight_text.get_rect(center=(
-            self.currentKnightPos[1] * self.cellSize + self.cellSize // 2,
-            self.currentKnightPos[0] * self.cellSize + self.cellSize // 2
-        ))
-        self.screen.blit(knight_text, knight_rect)
-
+                    if self.screen:
+                        knight_text = self.knight_font.render("♞", True, self.black)
+                        knight_rect = knight_text.get_rect(center=(
+                        self.currentKnightPos[1] * self.cellSize + self.cellSize // 2,
+                self.currentKnightPos[0] * self.cellSize + self.cellSize // 2
+            ))
+                        self.screen.blit(knight_text, knight_rect)
         pygame.display.flip()
         self.clock.tick(self.fps)
         time.sleep(self.sleeptime)
@@ -195,7 +192,6 @@ class Chessboard:
             self._drawGrid(self.screen)
             pygame.display.flip()
             self.clock.tick(self.fps)
-            self._refresh()
 
         pygame.quit()
 
@@ -221,6 +217,6 @@ class Chessboard:
 
 if __name__ == "__main__":
     # printControls() and main() now encapsulated in the class:
-    game = Chessboard(True, render_delay_sec=0.1, grid_length=6, grid_width=6, starting_knight_pos=(0, 0), obstacle_boxes=5)
+    game = Chessboard(True, render_delay_sec=0.1, grid_length=6, grid_width=6, obstacle_boxes=5)
     game._printControls()
     game._main()
