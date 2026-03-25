@@ -15,9 +15,10 @@ from knightstouragent import *
 
 ##############################################################################################################################
 
-game = Chessboard(GUI=True, render_delay_sec=0.5, grid_length=6,grid_width= 6, obstacle_boxes=0)
-currentKnightPos, moveChoice, grid, placedKnights, done = game.execute('export')
+game = Chessboard(GUI=True, render_delay_sec=0.5, grid_length=6,grid_width= 6 obstacle_boxes=0)
+shapePos, currentShapeIndex, currentColorIndex, grid, filledSpaces, done = game.execute('export')
 np.savetxt('initial_grid.txt', grid, fmt="%d")
+
 ##############################################################################################################################
 
 # Initialization
@@ -42,9 +43,9 @@ np.savetxt('initial_grid.txt', grid, fmt="%d")
 
 ##############################################################################################################################
 
-currentKnightPos, moveChoice, grid, placedKnights, done = game.execute('export')
+shapePos, currentShapeIndex, currentColorIndex, grid, filledSpaces, done = game.execute('export')
 
-print(currentKnightPos, moveChoice, grid, placedKnights, done)
+print(shapePos, currentShapeIndex, currentColorIndex, grid, filledSpaces, done)
 
 
 ####################################################
