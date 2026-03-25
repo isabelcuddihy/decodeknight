@@ -4,15 +4,14 @@ import numpy as np
 import random
 
 class Chessboard:
-    def __init__(self, GUI=True, render_delay_sec=0.1, grid_length=6, grid_width = 6, starting_knight_pos=(0, 0), obstacle_boxes=5):
+    def __init__(self, GUI=True, render_delay_sec=0.1, grid_length=6, grid_width = 6, obstacle_boxes=5):
         # Constants
         self.gridSize = grid_length #eventually need to do something with width too for m x n grids
         self.cellSize = 40
         self.screenSize = self.gridSize * self.cellSize
         self.fps = 60
         self.sleeptime = render_delay_sec
-        self.currentKnightPos = [0, 0]
-        self.placedKnights = [(self.currentKnightPos[0], self.currentKnightPos[1])] # List to track prev ious knight positions in order (position, move number)
+        self.placedKnights = [] # List to track prev ious knight positions in order (position, move number)
         self.obstacle_boxes = obstacle_boxes
         
 
@@ -38,6 +37,7 @@ class Chessboard:
         self.screen = None
         self.clock = None
         self.grid = np.full((self.gridSize, self.gridSize), -1)
+        self.currentKnightPos = [0, 0]
         self.moveChoice = 0 # Index to track the current move choice from self.moves
         self.done = False
 
@@ -51,7 +51,7 @@ class Chessboard:
             pygame.font.init()
             self.font = pygame.font.SysFont(None, 24)
             # Draw knight symbol on current position
-            self.knight_font = pygame.font.SysFont("applesymbols", 28) # font that supports chess symbols
+            self.knight_font = pygame.font.SysFont("segoeuisymbol", 28)  # font that supports chess symbols
             self.screenSize = self.gridSize * self.cellSize
             self.screen = pygame.display.set_mode((self.screenSize, self.screenSize))
             pygame.display.set_caption("Chessboard")
@@ -221,6 +221,6 @@ class Chessboard:
 
 if __name__ == "__main__":
     # printControls() and main() now encapsulated in the class:
-    game = Chessboard(True, render_delay_sec=0.1, grid_length=6, grid_width=6, starting_knight_pos=(0, 0), obstacle_boxes=5)
+    game = Chessboard(True, render_delay_sec=0.1, grid_length=6, grid_width=6, obstacle_boxes=5)
     game._printControls()
     game._main()
