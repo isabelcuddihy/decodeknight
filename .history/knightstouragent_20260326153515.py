@@ -39,7 +39,6 @@ class Chessboard:
         self.screen = None
         self.clock = None
         self.grid = np.full((self.gridSize, self.gridSize), -1)
-        self.grid[self.currentKnightPos[0]][self.currentKnightPos[1]] = 1
         self.moveChoice = 0 # Index to track the current move choice from self.moves
         self.done = False
 
@@ -90,9 +89,9 @@ class Chessboard:
        
         elif command.lower() in ['u', 'undo']:
             if self.placedKnights:
+                last_knight_pos= self.placedKnights[-1]
                 self.placedKnights.pop()
-                last_knight_pos= self.placedKnights[-1] if self.placedKnights else self.startingKnightPos # default to starting position if no knights placed
-                self._removeKnight(self.grid, self.currentKnightPos)
+                self._removeKnight(self.grid, last_knight_pos)
                 self.currentKnightPos = last_knight_pos
                 if self.checkGrid(self.grid):
                     self.done = True
@@ -108,15 +107,12 @@ class Chessboard:
         return self.currentKnightPos, self.grid, self.placedKnights, self.done
 
     def canPlace(self, grid, x_move=None, y_move=None):
-        new_x = self.currentKnightPos[0] + x_move
-        new_y = self.currentKnightPos[1] + y_move
         # Does knight fit in grid and is position empty
-        if new_x >= self.gridSize or new_y >= self.gridSize or new_x < 0 or new_y < 0:
+        if self.currentKnightPos[0] + x_move  >= self.gridSize or self.currentKnightPos[1] + y_move >= self.gridSize or self.currentKnightPos[0] + x_move < 0 or self.currentKnightPos[1] + y_move < 0:
             return False
-        # check for filled square or obstacle
-        if grid[new_x][new_y] != -1:  # check DESTINATION, not current pos
+        # Check for filled square
+        if grid[self.currentKnightPos[0]][self.currentKnightPos[1]] != -1:
             return False
-
         return True
 
     def checkGrid(self, grid):
@@ -138,6 +134,7 @@ class Chessboard:
 
         grid[pos[0] + x_move][pos[1] + y_move] = len(self.placedKnights) + 1
         
+
     def _removeKnight(self, grid, pos):
         grid[pos[0]][pos[1]] = -1
 
@@ -153,10 +150,6 @@ class Chessboard:
     def _refresh(self):
         if not self.screen:
             return
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                return
         self.screen.fill(self.white)
         self._drawGrid(self.screen)
 
@@ -175,8 +168,8 @@ class Chessboard:
         # Draw knight symbol on current position - outside the loop
         knight_text = self.knight_font.render("♞", True, self.black)
         knight_rect = knight_text.get_rect(center=(
-            self.currentKnightPos[1] * self.cellSize + self.cellSize // 2,
-            self.currentKnightPos[0] * self.cellSize + self.cellSize // 2
+            self.currentKnightPos[0] * self.cellSize + self.cellSize // 2,
+            self.currentKnightPos[1] * self.cellSize + self.cellSize // 2
         ))
         self.screen.blit(knight_text, knight_rect)
 

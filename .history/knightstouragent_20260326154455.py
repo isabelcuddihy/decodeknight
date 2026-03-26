@@ -90,8 +90,8 @@ class Chessboard:
        
         elif command.lower() in ['u', 'undo']:
             if self.placedKnights:
+                last_knight_pos= self.placedKnights[-1]
                 self.placedKnights.pop()
-                last_knight_pos= self.placedKnights[-1] if self.placedKnights else self.startingKnightPos # default to starting position if no knights placed
                 self._removeKnight(self.grid, self.currentKnightPos)
                 self.currentKnightPos = last_knight_pos
                 if self.checkGrid(self.grid):
@@ -153,10 +153,6 @@ class Chessboard:
     def _refresh(self):
         if not self.screen:
             return
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                return
         self.screen.fill(self.white)
         self._drawGrid(self.screen)
 

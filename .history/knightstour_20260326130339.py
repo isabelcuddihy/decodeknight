@@ -30,7 +30,6 @@ currentKnightPos,grid, placedKnights, done = game.execute('export')
 print(currentKnightPos,  grid, placedKnights, done)
 
 
-
 ####################################################
 # Timing your code's execution for metrics.
 ####################################################
@@ -96,11 +95,12 @@ def warnsdorff_solver(current_pos, move_count):
 #Test to see if knight moved
 pos, grid, placed, done = game.execute('place', (2, 1))
 print(f"Placed at: {pos}, total placed: {len(placed)}")
-
-pos, grid, placed, done = game.execute('place', (-1, 2))
+pos, grid, placed, done = game.execute('place', (2, 1))
 print(f"Placed at: {pos}, total placed: {len(placed)}")
-pos, grid, placed, done = game.execute('undo')
-print(f"Undid move at: {pos}, total placed: {len(placed)}")
+pos, grid, placed, done = game.execute('place', (-1, -2))
+print(f"Placed at: {pos}, total placed: {len(placed)}")
+#pos, grid, placed, done = game.execute('undo')
+#print(f"Undid move at: {pos}, total placed: {len(placed)}")
 
 #Control the movement of the knight with the agent's execute method:
 

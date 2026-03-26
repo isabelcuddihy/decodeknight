@@ -20,15 +20,13 @@ from warnsdorff import *
 ####################################################
 
 
-game = Chessboard(GUI=True, render_delay_sec=0.5, grid_length=6,grid_width= 6,starting_knight_pos=(0, 0), obstacle_boxes=0)
-currentKnightPos, grid, placedKnights, done = game.execute('export')
+game = Chessboard(GUI=True, render_delay_sec=0.5, grid_length=6,grid_width= 6, obstacle_boxes=0)
+currentKnightPos, moveChoice, grid, placedKnights, done = game.execute('export')
 np.savetxt('initial_grid.txt', grid, fmt="%d")
 
-currentKnightPos,grid, placedKnights, done = game.execute('export')
+currentKnightPos, moveChoice, grid, placedKnights, done = game.execute('export')
 
-
-print(currentKnightPos,  grid, placedKnights, done)
-
+print(currentKnightPos, moveChoice, grid, placedKnights, done)
 
 
 ####################################################
@@ -93,24 +91,20 @@ def warnsdorff_solver(current_pos, move_count):
     return False
 
 
-#Test to see if knight moved
-pos, grid, placed, done = game.execute('place', (2, 1))
-print(f"Placed at: {pos}, total placed: {len(placed)}")
 
-pos, grid, placed, done = game.execute('place', (-1, 2))
-print(f"Placed at: {pos}, total placed: {len(placed)}")
-pos, grid, placed, done = game.execute('undo')
-print(f"Undid move at: {pos}, total placed: {len(placed)}")
+'''
+Function builds all the commands needed to execute the desired new move in the original grid
+Params - (x_move :INT )how many horizontal steps to execute
+(y_move :INT )how many vertical steps to execute
+Returns - list of strings containing the commands needed to execute the desired new move in the original grid
+'''
+def setUpCommandExecution(grid, possible_valid_move):
 
-#Control the movement of the knight with the agent's execute method:
-
-#warnsdorff_solver(pos, len(placed))
+   warnsdorff_solver(possible_valid_move, move_count + 1)
 end=time.time()
 print(f"Solved with {end-start} seconds of execution time!")
 
 game._main()
-
-
 np.savetxt('grid.txt', grid, fmt="%d")
 with open("final_grid.txt", "w") as outfile:
     outfile.write(str(filledSpaces))

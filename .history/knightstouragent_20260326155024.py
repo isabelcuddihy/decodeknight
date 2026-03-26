@@ -153,10 +153,9 @@ class Chessboard:
     def _refresh(self):
         if not self.screen:
             return
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                return
+        if event.type == pygame.QUIT:
+            pygame.quit()
+            return
         self.screen.fill(self.white)
         self._drawGrid(self.screen)
 

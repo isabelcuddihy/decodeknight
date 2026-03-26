@@ -20,7 +20,7 @@ from warnsdorff import *
 ####################################################
 
 
-game = Chessboard(GUI=True, render_delay_sec=0.5, grid_length=6,grid_width= 6,starting_knight_pos=(0, 0), obstacle_boxes=0)
+game = Chessboard(GUI=True, render_delay_sec=1.5, grid_length=6,grid_width= 6,starting_knight_pos=(0, 0), obstacle_boxes=0)
 currentKnightPos, grid, placedKnights, done = game.execute('export')
 np.savetxt('initial_grid.txt', grid, fmt="%d")
 
@@ -29,7 +29,7 @@ currentKnightPos,grid, placedKnights, done = game.execute('export')
 
 print(currentKnightPos,  grid, placedKnights, done)
 
-
+grid[game.currentKnightPos[1]][game.currentKnightPos[0]] = 1 # Mark starting position as visited with move number 1
 
 ####################################################
 # Timing your code's execution for metrics.
@@ -97,10 +97,10 @@ def warnsdorff_solver(current_pos, move_count):
 pos, grid, placed, done = game.execute('place', (2, 1))
 print(f"Placed at: {pos}, total placed: {len(placed)}")
 
-pos, grid, placed, done = game.execute('place', (-1, 2))
+pos, grid, placed, done = game.execute('place', (-1, -2))
 print(f"Placed at: {pos}, total placed: {len(placed)}")
-pos, grid, placed, done = game.execute('undo')
-print(f"Undid move at: {pos}, total placed: {len(placed)}")
+#pos, grid, placed, done = game.execute('undo')
+#print(f"Undid move at: {pos}, total placed: {len(placed)}")
 
 #Control the movement of the knight with the agent's execute method:
 

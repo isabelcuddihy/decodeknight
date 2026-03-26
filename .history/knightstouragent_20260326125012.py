@@ -12,8 +12,8 @@ class Chessboard:
         self.screenSize = self.gridSize * self.cellSize
         self.fps = 60
         self.sleeptime = render_delay_sec
-        self.currentKnightPos = (starting_knight_pos[0], starting_knight_pos[1]) # (x, y) format
-        self.placedKnights = [(self.currentKnightPos[0], self.currentKnightPos[1])] # List to track previous knight positions in order (position)
+        self.currentKnightPos = [0, 0]
+        self.placedKnights = [(self.currentKnightPos[0], self.currentKnightPos[1])] # List to track prev ious knight positions in order (position, move number)
         self.obstacle_boxes = obstacle_boxes
         
 
@@ -39,7 +39,6 @@ class Chessboard:
         self.screen = None
         self.clock = None
         self.grid = np.full((self.gridSize, self.gridSize), -1)
-        self.grid[self.currentKnightPos[0]][self.currentKnightPos[1]] = 1
         self.moveChoice = 0 # Index to track the current move choice from self.moves
         self.done = False
 
@@ -72,9 +71,9 @@ class Chessboard:
                 pass
             return self.currentKnightPos, self.grid, self.placedKnights, self.done
         elif command.lower() in ['p', 'place']:
-            if self.canPlace(self.grid,  position[0], position[1]):
+            if self.canPlace(self.grid,  self.currentKnightPos):
                 self._placeKnight(self.grid, self.currentKnightPos, position[0], position[1])
-                self.currentKnightPos = (self.currentKnightPos[0] + position[0], self.currentKnightPos[1] + position[1])
+                self.currentKnightPos = (position[0], position[1])
                 self.placedKnights.append(( self.currentKnightPos))
                 self._exportGridState(self.grid)
                 new_event = pygame.event.Event(pygame.KEYDOWN, unicode='p', key=ord('p'))
@@ -90,10 +89,9 @@ class Chessboard:
        
         elif command.lower() in ['u', 'undo']:
             if self.placedKnights:
+                last_knight_pos= self.placedKnights[-1]
                 self.placedKnights.pop()
-                last_knight_pos= self.placedKnights[-1] if self.placedKnights else self.startingKnightPos # default to starting position if no knights placed
-                self._removeKnight(self.grid, self.currentKnightPos)
-                self.currentKnightPos = last_knight_pos
+                self._removeKnight(self.grid, last_knight_pos)
                 if self.checkGrid(self.grid):
                     self.done = True
                 else:
@@ -107,16 +105,13 @@ class Chessboard:
 
         return self.currentKnightPos, self.grid, self.placedKnights, self.done
 
-    def canPlace(self, grid, x_move=None, y_move=None):
-        new_x = self.currentKnightPos[0] + x_move
-        new_y = self.currentKnightPos[1] + y_move
+    def canPlace(self, grid, pos):
         # Does knight fit in grid and is position empty
-        if new_x >= self.gridSize or new_y >= self.gridSize or new_x < 0 or new_y < 0:
+        if pos[0]  >= self.gridSize or pos[1] >= self.gridSize or pos[0] < 0 or pos[1] < 0:
             return False
-        # check for filled square or obstacle
-        if grid[new_x][new_y] != -1:  # check DESTINATION, not current pos
+        # Check for filled square
+        if grid[pos[0]][pos[1]] != -1:
             return False
-
         return True
 
     def checkGrid(self, grid):
@@ -134,10 +129,10 @@ class Chessboard:
                 rect = pygame.Rect(x, y, self.cellSize, self.cellSize)
                 pygame.draw.rect(screen, self.blue, rect, 1)
 
-    def _placeKnight(self, grid, pos, x_move, y_move):
-
-        grid[pos[0] + x_move][pos[1] + y_move] = len(self.placedKnights) + 1
+    def _placeKnight(self, grid, pos):
+        grid[pos[0]][pos[1]] = len(self.placedKnights) + 1
         
+
     def _removeKnight(self, grid, pos):
         grid[pos[0]][pos[1]] = -1
 
@@ -153,10 +148,6 @@ class Chessboard:
     def _refresh(self):
         if not self.screen:
             return
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                return
         self.screen.fill(self.white)
         self._drawGrid(self.screen)
 
@@ -214,13 +205,15 @@ class Chessboard:
         for row in grid:
             print(' '.join(f'{cell:2}' for cell in row))
         print()
-    def _status(self):
-        ## Utility method. Can be used for debugging.
-        print(f"Current Knight Position: {self.currentKnightPos}")
-        print(f"Current Grid State:\n{self.grid}")
-        print(f"Placed Knights: {self.placedKnights}")
-        print(f"Done: {self.done}")
 
+    def _printControls(self):
+        ## Prints the controls for manual control
+        print("P to place the shape.")
+        print("U to undo the last placed shape.")
+        print("E to print the grid state from GUI to terminal.")
+        print("I to import a dummy grid state.")
+        print("Q to quit (terminal mode only).")
+        print("Press any key to continue")
 
     def _main(self):
         ## Allows manual control over the environment.
@@ -228,7 +221,7 @@ class Chessboard:
 
 
 if __name__ == "__main__":
+    # printControls() and main() now encapsulated in the class:
     game = Chessboard(True, render_delay_sec=0.1, grid_length=6, grid_width=6, starting_knight_pos=(0, 0), obstacle_boxes=5)
-    game._status()
+    game._printControls()
     game._main()
-

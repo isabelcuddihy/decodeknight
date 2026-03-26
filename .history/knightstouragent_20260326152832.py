@@ -39,7 +39,6 @@ class Chessboard:
         self.screen = None
         self.clock = None
         self.grid = np.full((self.gridSize, self.gridSize), -1)
-        self.grid[self.currentKnightPos[0]][self.currentKnightPos[1]] = 1
         self.moveChoice = 0 # Index to track the current move choice from self.moves
         self.done = False
 
@@ -72,9 +71,9 @@ class Chessboard:
                 pass
             return self.currentKnightPos, self.grid, self.placedKnights, self.done
         elif command.lower() in ['p', 'place']:
-            if self.canPlace(self.grid,  position[0], position[1]):
+            if self.canPlace(self.grid,  self.currentKnightPos):
                 self._placeKnight(self.grid, self.currentKnightPos, position[0], position[1])
-                self.currentKnightPos = (self.currentKnightPos[0] + position[0], self.currentKnightPos[1] + position[1])
+                self.currentKnightPos = (position[0], position[1])
                 self.placedKnights.append(( self.currentKnightPos))
                 self._exportGridState(self.grid)
                 new_event = pygame.event.Event(pygame.KEYDOWN, unicode='p', key=ord('p'))
@@ -90,9 +89,9 @@ class Chessboard:
        
         elif command.lower() in ['u', 'undo']:
             if self.placedKnights:
+                last_knight_pos= self.placedKnights[-1]
                 self.placedKnights.pop()
-                last_knight_pos= self.placedKnights[-1] if self.placedKnights else self.startingKnightPos # default to starting position if no knights placed
-                self._removeKnight(self.grid, self.currentKnightPos)
+                self._removeKnight(self.grid, last_knight_pos)
                 self.currentKnightPos = last_knight_pos
                 if self.checkGrid(self.grid):
                     self.done = True
@@ -107,16 +106,13 @@ class Chessboard:
 
         return self.currentKnightPos, self.grid, self.placedKnights, self.done
 
-    def canPlace(self, grid, x_move=None, y_move=None):
-        new_x = self.currentKnightPos[0] + x_move
-        new_y = self.currentKnightPos[1] + y_move
+    def canPlace(self, grid, current_pos):
         # Does knight fit in grid and is position empty
-        if new_x >= self.gridSize or new_y >= self.gridSize or new_x < 0 or new_y < 0:
+        if self.currentKnightPos[0]  >= self.gridSize or self.currentKnightPos[1] >= self.gridSize or self.currentKnightPos[0] < 0 or self.currentKnightPos[1] < 0:
             return False
-        # check for filled square or obstacle
-        if grid[new_x][new_y] != -1:  # check DESTINATION, not current pos
+        # Check for filled square
+        if grid[self.currentKnightPos[0]][self.currentKnightPos[1]] != -1:
             return False
-
         return True
 
     def checkGrid(self, grid):
@@ -135,9 +131,9 @@ class Chessboard:
                 pygame.draw.rect(screen, self.blue, rect, 1)
 
     def _placeKnight(self, grid, pos, x_move, y_move):
-
-        grid[pos[0] + x_move][pos[1] + y_move] = len(self.placedKnights) + 1
+        grid[x_move][y_move] = len(self.placedKnights) + 1
         
+
     def _removeKnight(self, grid, pos):
         grid[pos[0]][pos[1]] = -1
 
@@ -153,10 +149,6 @@ class Chessboard:
     def _refresh(self):
         if not self.screen:
             return
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                return
         self.screen.fill(self.white)
         self._drawGrid(self.screen)
 
@@ -175,8 +167,8 @@ class Chessboard:
         # Draw knight symbol on current position - outside the loop
         knight_text = self.knight_font.render("♞", True, self.black)
         knight_rect = knight_text.get_rect(center=(
-            self.currentKnightPos[1] * self.cellSize + self.cellSize // 2,
-            self.currentKnightPos[0] * self.cellSize + self.cellSize // 2
+            self.currentKnightPos[0] * self.cellSize + self.cellSize // 2,
+            self.currentKnightPos[1] * self.cellSize + self.cellSize // 2
         ))
         self.screen.blit(knight_text, knight_rect)
 
