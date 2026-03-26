@@ -13,10 +13,7 @@ class Chessboard:
         self.fps = 60
         self.sleeptime = render_delay_sec
         self.currentKnightPos = (starting_knight_pos[0], starting_knight_pos[1]) # (x, y) format
-        self.placedKnights = []
-        self.grid = np.full((self.gridSize, self.gridSize), -1)
-        self.grid[self.currentKnightPos[0]][self.currentKnightPos[1]] = 1
-        self.placedKnights.append(self.currentKnightPos)
+        self.placedKnights = [(self.currentKnightPos[0], self.currentKnightPos[1])] # List to track previous knight positions in order (position)
         self.obstacle_boxes = obstacle_boxes
         
 
@@ -41,7 +38,9 @@ class Chessboard:
         # Global variables (now instance attributes)
         self.screen = None
         self.clock = None
-
+        self.grid = np.full((self.gridSize, self.gridSize), -1)
+        self.grid[self.currentKnightPos[0]][self.currentKnightPos[1]] = 1
+        self.moveChoice = 0 # Index to track the current move choice from self.moves
         self.done = False
 
 

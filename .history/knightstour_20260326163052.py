@@ -104,6 +104,7 @@ def warnsdorff_solver(current_pos, move_count):
 # print(f"Undid move at: {pos}, total placed: {len(placed)}")
 
 
+command = input("Enter command (place x y / undo / export): ")
 print("Valid moves from start:", get_valid_moves(currentKnightPos, grid))
 print("Placed knights:", placedKnights)
 print("Grid state:\n", grid)

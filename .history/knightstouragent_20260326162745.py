@@ -14,7 +14,6 @@ class Chessboard:
         self.sleeptime = render_delay_sec
         self.currentKnightPos = (starting_knight_pos[0], starting_knight_pos[1]) # (x, y) format
         self.placedKnights = []
-        self.grid = np.full((self.gridSize, self.gridSize), -1)
         self.grid[self.currentKnightPos[0]][self.currentKnightPos[1]] = 1
         self.placedKnights.append(self.currentKnightPos)
         self.obstacle_boxes = obstacle_boxes
@@ -41,7 +40,7 @@ class Chessboard:
         # Global variables (now instance attributes)
         self.screen = None
         self.clock = None
-
+        self.grid = np.full((self.gridSize, self.gridSize), -1)
         self.done = False
 
 

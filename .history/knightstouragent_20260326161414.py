@@ -13,10 +13,7 @@ class Chessboard:
         self.fps = 60
         self.sleeptime = render_delay_sec
         self.currentKnightPos = (starting_knight_pos[0], starting_knight_pos[1]) # (x, y) format
-        self.placedKnights = []
-        self.grid = np.full((self.gridSize, self.gridSize), -1)
-        self.grid[self.currentKnightPos[0]][self.currentKnightPos[1]] = 1
-        self.placedKnights.append(self.currentKnightPos)
+        self.placedKnights = [(self.currentKnightPos[0], self.currentKnightPos[1])] # List to track previous knight positions in order (position)
         self.obstacle_boxes = obstacle_boxes
         
 
@@ -41,7 +38,9 @@ class Chessboard:
         # Global variables (now instance attributes)
         self.screen = None
         self.clock = None
-
+        self.grid = np.full((self.gridSize, self.gridSize), -1)
+        self.grid[self.currentKnightPos[0]][self.currentKnightPos[1]] = 1
+        self.moveChoice = 0 # Index to track the current move choice from self.moves
         self.done = False
 
 
@@ -73,7 +72,7 @@ class Chessboard:
                 pass
             return self.currentKnightPos, self.grid, self.placedKnights, self.done
         elif command.lower() in ['p', 'place']:
-            if self.canPlace(self.grid,  position):
+            if self.canPlace(self.grid,  position[0], position[1]):
                 self._placeKnight(self.grid,  position)
                 self.currentKnightPos = position
                 self.placedKnights.append(( self.currentKnightPos))
@@ -90,9 +89,9 @@ class Chessboard:
                     self.done = False
        
         elif command.lower() in ['u', 'undo']:
-            if len(self.placedKnights) > 1:
+            if self.placedKnights:
                 self.placedKnights.pop()
-                last_knight_pos= self.placedKnights[-1]
+                last_knight_pos= self.placedKnights[-1] if self.placedKnights else self.startingKnightPos # default to starting position if no knights placed
                 self._removeKnight(self.grid, self.currentKnightPos)
                 self.currentKnightPos = last_knight_pos
                 if self.checkGrid(self.grid):

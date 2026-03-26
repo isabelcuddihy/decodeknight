@@ -25,7 +25,6 @@ currentKnightPos, grid, placedKnights, done = game.execute('export')
 np.savetxt('initial_grid.txt', grid, fmt="%d")
 
 currentKnightPos,grid, placedKnights, done = game.execute('export')
-grid_size = grid.shape[0]
 
 
 print(currentKnightPos,  grid, placedKnights, done)
@@ -63,7 +62,7 @@ def get_valid_moves(current_pos, grid):
         if 0 <= new_x < grid_size and 0 <= new_y < grid_size:
             
             # check if the cell is unvisited (-1)
-            if grid[new_x, new_y] == -1:
+            if grid[new_y, new_x] == -1:
                 valid.append((new_x, new_y))
                 
     return valid
@@ -75,10 +74,10 @@ def warnsdorff_solver(current_pos, move_count):
         return True
 
     # get nodes and their Warnsdorff scores
-    nodes = get_valid_moves( current_pos, game.grid)
+    nodes = valid_moves(current_pos)
 
     # sort nodes by the number of onward moves they have
-    nodes.sort(key=lambda c: len(get_valid_moves(c, game.grid)))
+    nodes.sort(key=lambda c: len(valid_moves(c)))
 
     for next_move in nodes:
         # move to the square
@@ -95,21 +94,14 @@ def warnsdorff_solver(current_pos, move_count):
 
 
 #Test to see if knight moved
-# pos, grid, placed, done = game.execute('place', (2, 1))
-# print(f"Placed at: {pos}, total placed: {len(placed)}")
+pos, grid, placed, done = game.execute('place', (2, 1))
+print(f"Placed at: {pos}, total placed: {len(placed)}")
 
-# pos, grid, placed, done = game.execute('place', (-1, 2))
-# print(f"Placed at: {pos}, total placed: {len(placed)}")
-# pos, grid, placed, done = game.execute('undo')
-# print(f"Undid move at: {pos}, total placed: {len(placed)}")
+pos, grid, placed, done = game.execute('place', (-1, 2))
+print(f"Placed at: {pos}, total placed: {len(placed)}")
+pos, grid, placed, done = game.execute('undo')
+print(f"Undid move at: {pos}, total placed: {len(placed)}")
 
-
-print("Valid moves from start:", get_valid_moves(currentKnightPos, grid))
-print("Placed knights:", placedKnights)
-print("Grid state:\n", grid)
-
-warnsdorff_solver(currentKnightPos, len(placedKnights))
-    
 
 
 #Control the movement of the knight with the agent's execute method:
@@ -123,5 +115,5 @@ game._main()
 
 np.savetxt('grid.txt', grid, fmt="%d")
 with open("final_grid.txt", "w") as outfile:
-    outfile.write(str(placedKnights))
+    outfile.write(str(filledSpaces))
 

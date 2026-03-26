@@ -63,7 +63,7 @@ def get_valid_moves(current_pos, grid):
         if 0 <= new_x < grid_size and 0 <= new_y < grid_size:
             
             # check if the cell is unvisited (-1)
-            if grid[new_x, new_y] == -1:
+            if grid[new_y, new_x] == -1:
                 valid.append((new_x, new_y))
                 
     return valid
@@ -75,10 +75,10 @@ def warnsdorff_solver(current_pos, move_count):
         return True
 
     # get nodes and their Warnsdorff scores
-    nodes = get_valid_moves( current_pos, game.grid)
+    nodes = get_valid_moves(current_pos)
 
     # sort nodes by the number of onward moves they have
-    nodes.sort(key=lambda c: len(get_valid_moves(c, game.grid)))
+    nodes.sort(key=lambda c: len(get_valid_moves(c)))
 
     for next_move in nodes:
         # move to the square
@@ -103,13 +103,9 @@ def warnsdorff_solver(current_pos, move_count):
 # pos, grid, placed, done = game.execute('undo')
 # print(f"Undid move at: {pos}, total placed: {len(placed)}")
 
-
-print("Valid moves from start:", get_valid_moves(currentKnightPos, grid))
-print("Placed knights:", placedKnights)
-print("Grid state:\n", grid)
-
-warnsdorff_solver(currentKnightPos, len(placedKnights))
-    
+while not done:
+    command = input("Enter command (place x y / undo / export): ")
+    warnsdorff_solver(currentKnightPos, len(placedKnights))
 
 
 #Control the movement of the knight with the agent's execute method:
@@ -123,5 +119,5 @@ game._main()
 
 np.savetxt('grid.txt', grid, fmt="%d")
 with open("final_grid.txt", "w") as outfile:
-    outfile.write(str(placedKnights))
+    outfile.write(str(filledSpaces))
 
