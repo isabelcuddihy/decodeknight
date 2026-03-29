@@ -2,17 +2,17 @@ import time
 import pygame
 import numpy as np
 import random
-import warnsdorff
+
 
 class Chessboard:
     def __init__(self, GUI=True, render_delay_sec=0.1, grid_length=6, grid_width = 6, starting_knight_pos=(0, 0), obstacle_boxes=5):
         # Constants
         self.gridSize = grid_length #eventually need to do something with width too for m x n grids
-        self.cellSize = 40
+        self.cellSize = 25
         self.screenSize = self.gridSize * self.cellSize
         self.fps = 60
         self.sleeptime = render_delay_sec
-        self.currentKnightPos = (starting_knight_pos[0], starting_knight_pos[1]) # (x, y) format
+        self.currentKnightPos = (starting_knight_pos[0], starting_knight_pos[1]) # (y, x) format
         self.placedKnights = []
         self.grid = np.full((self.gridSize, self.gridSize), -1)
         self.grid[self.currentKnightPos[0]][self.currentKnightPos[1]] = 1
