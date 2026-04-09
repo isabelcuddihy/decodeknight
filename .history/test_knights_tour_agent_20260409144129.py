@@ -99,7 +99,6 @@ class TestKnightsTour:
             solved = False
         finally:
             end_time = time()
-        # Results for Reporting
         results_collector.append({
     "board_label": f"{dimension_x}x{dimension_y}",
     "dimensions": (dimension_x, dimension_y),
