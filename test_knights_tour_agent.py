@@ -87,6 +87,7 @@ class TestKnightsTour:
 
 
     ])
+
     def test_knights_tour(self, dimension_x, dimension_y, starting_pos, obstacle_boxes, expected, build_chessboard, results_collector):
         start_time = time()
         board, agent = build_chessboard(dimension_x, dimension_y, starting_pos, obstacle_boxes)
