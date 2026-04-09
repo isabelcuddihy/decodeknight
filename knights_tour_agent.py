@@ -8,12 +8,15 @@ from knights_tour_GUI import *
 import sys
 
 ########################## CONTROL PANEL #################################################
+
+# set limit high enough for a 50x50 board (2500 moves) plus some buffer for helper functions.
+# adjust higher for larger NxN tests
+########################## CONTROL PANEL #################################################
 # adjust board dimensions (as rectangle)
 DIM_X = 6 # columns
 DIM_Y = 6 # rows
 
 #4x6 didn't work but 5x6, 8x6, 8x16, 8x12, 13x11, 13x5, 6x5 did
-
 
 # randomizes starting position, change to fixed coord e.g. (0,0) for testing
 #STARTING_POS = (random.randint(0, (DIM_Y - 1)), random.randint(0, (DIM_X - 1)))
