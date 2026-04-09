@@ -50,8 +50,15 @@ print(currentKnightPos,  grid, placedKnights, done)
 ###################################################################################################3
 
 
+#AGENT CODE BELOW
 
-
+def reset_grid(grid, pos, starting_pos):
+    # Resets the grid to its initial state with all cells unvisited (-1) except the starting position which is marked as visited (1).
+    grid.fill(-1)  # Mark all cells as unvisited
+    grid[pos[0], pos[1]] = 1  # Mark the starting position as visited
+    grid[starting_pos[0], starting_pos[1]] = 1  # Ensure the starting position is marked as visited
+    placedKnights.clear()  # Clear the list of placed knights
+    return grid
 
 
 def get_valid_moves(current_pos, grid):
@@ -103,7 +110,6 @@ def recur_num_of_mov(node, level, grid):
     
     grid[node[0], node[1]] = original_val # Restore before returning
     return total_connectivity
-
 
 
 

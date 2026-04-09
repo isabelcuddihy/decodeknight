@@ -50,8 +50,13 @@ print(currentKnightPos,  grid, placedKnights, done)
 ###################################################################################################3
 
 
+#AGENT CODE BELOW
 
-
+def reset_grid(grid, pos):
+    # Resets the grid to its initial state with all cells unvisited (-1) except the starting position which is marked as visited (1).
+    grid.fill(-1)  # Mark all cells as unvisited
+    grid[pos[0], pos[1]] = 1  # Mark the starting position as visited
+    return grid
 
 
 def get_valid_moves(current_pos, grid):

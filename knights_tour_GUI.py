@@ -5,20 +5,23 @@ import random
 
 
 class Chessboard:
-    def __init__(self, GUI=True, render_delay_sec=0.1, grid_length=6, grid_width = 6, starting_knight_pos=(0, 0), obstacle_boxes=5):
+    def __init__(self, GUI=True, render_delay_sec=0.1, grid_rows=6, grid_cols = 6, starting_knight_pos=(0, 0), obstacle_boxes=5):
         # Constants
-        self.gridSize = grid_length #eventually need to do something with width too for m x n grids
+        self.grid_rows = grid_rows #eventually need to do something with width too for m x n grids
+        self.grid_cols = grid_cols
+        self.gridSize = self.grid_rows * self.grid_cols
         self.cellSize = 25
-        self.screenSize = self.gridSize * self.cellSize
+        self.cellWidth = self.grid_cols * self.cellSize
+        self.cellHeight = self.grid_rows * self.cellSize
         self.fps = 60
         self.sleeptime = render_delay_sec
         self.currentKnightPos = (starting_knight_pos[0], starting_knight_pos[1]) # (y, x) format
         self.placedKnights = []
-        self.grid = np.full((self.gridSize, self.gridSize), -1)
+        self.grid = np.full((grid_rows, grid_cols), -1)
         self.grid[self.currentKnightPos[0]][self.currentKnightPos[1]] = 1
         self.placedKnights.append(self.currentKnightPos)
         self.obstacle_boxes = obstacle_boxes
-        
+
 
         #Design choices for numbers and colors for GUI
         self.black = (0,0,0)
@@ -45,8 +48,9 @@ class Chessboard:
         self.done = False
 
 
-        # Initialize grid with random obstacles - In Progress
-        # self._addRandomColoredBoxes(self.grid, num_colored_boxes)
+        # Initialize grid with random obstacles
+        # if obstacle_boxes > 0:
+        #     self.addRandomObstacleBoxes(self.grid)
 
         # Initialize the graphical interface (if enabled)
         if GUI:
@@ -55,8 +59,7 @@ class Chessboard:
             self.font = pygame.font.SysFont(None, 24)
             # Draw knight symbol on current position
             self.knight_font = pygame.font.SysFont("applesymbols", 28) # font that supports chess symbols
-            self.screenSize = self.gridSize * self.cellSize
-            self.screen = pygame.display.set_mode((self.screenSize, self.screenSize))
+            self.screen = pygame.display.set_mode((self.cellWidth, self.cellHeight))
             pygame.display.set_caption("Chessboard")
             self.clock = pygame.time.Clock()
 
@@ -110,7 +113,7 @@ class Chessboard:
 
     def canPlace(self, grid, pos):
         # Does knight fit in grid and is position empty
-        if pos[0] >= self.gridSize or pos[1] >= self.gridSize or pos[0] < 0 or pos[1] < 0:
+        if (pos[0] >= self.grid_rows or pos[1] >= self.grid_cols or pos[0] < 0 or pos[1] < 0):
             return False
         # check for filled square or obstacle
         if grid[pos[0]][pos[1]] != -1:  # check DESTINATION, not current pos
@@ -128,9 +131,9 @@ class Chessboard:
     # All other methods are private (no requirement for public)
 
     def _drawGrid(self, screen):
-        for x in range(0, self.screenSize, self.cellSize):
-            for y in range(0, self.screenSize, self.cellSize):
-                rect = pygame.Rect(x, y, self.cellSize, self.cellSize)
+        for col in range(0, self.cellWidth, self.cellSize):
+            for row in range(0, self.cellHeight, self.cellSize):
+                rect = pygame.Rect(col, row, self.cellSize, self.cellSize)
                 pygame.draw.rect(screen, self.blue, rect, 1)
 
     def _placeKnight(self, grid, pos):
@@ -160,8 +163,8 @@ class Chessboard:
         self._drawGrid(self.screen)
 
         # Draw visited squares with move numbers
-        for i in range(self.gridSize):
-            for j in range(self.gridSize):
+        for i in range(self.grid_rows):
+            for j in range(self.grid_cols):
                 if self.grid[i, j] != -1:
                     rect = pygame.Rect(j * self.cellSize, i * self.cellSize, self.cellSize, self.cellSize)
                     pygame.draw.rect(self.screen, self.status[1], rect)
@@ -183,15 +186,14 @@ class Chessboard:
         self.clock.tick(self.fps)
         time.sleep(self.sleeptime)
 
-    # def _addRandomColoredBoxes(self, grid, num_boxes=5):
-    #     ## Adds the random colored boxes.
-    #     empty_positions = list(zip(*np.where(grid == -1)))
-    #     random_positions = random.sample(empty_positions, min(num_boxes, len(empty_positions)))
+    def addRandomObstacleBoxes(self, grid):
+        ## Adds the random obstacle boxes.
+        empty_positions = list(zip(*np.where(grid == -1)))
+        random_positions = random.sample(empty_positions, min(self.obstacle_boxes, len(empty_positions)))
 
-    #     # Place random colored boxes at selected positions
-    #     for pos in random_positions:
-    #         color_index = self.getAvailableColor(grid, pos[1], pos[0])
-    #         grid[pos[0], pos[1]] = color_index
+        # Place random colored boxes at selected positions
+        for pos in random_positions:
+            grid[pos[0], pos[1]] = 0
 
     def _loop_gui(self):
         ## Main Loop for the GUI
@@ -227,7 +229,7 @@ class Chessboard:
 
 
 if __name__ == "__main__":
-    game = Chessboard(True, render_delay_sec=0.1, grid_length=6, grid_width=6, starting_knight_pos=(0, 0), obstacle_boxes=5)
+    game = Chessboard(True, render_delay_sec=0.1, grid_rows=6, grid_cols=6, starting_knight_pos=(0, 0), obstacle_boxes=0)
     game._status()
     game._main()
 
