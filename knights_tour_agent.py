@@ -19,8 +19,8 @@ DIM_Y = 6 # rows
 #4x6 didn't work but 5x6, 8x6, 8x16, 8x12, 13x11, 13x5, 6x5 did
 
 # randomizes starting position, change to fixed coord e.g. (0,0) for testing
-#STARTING_POS = (random.randint(0, (DIM_Y - 1)), random.randint(0, (DIM_X - 1)))
-STARTING_POS = (2, 3)
+STARTING_POS = (random.randint(0, (DIM_Y - 1)), random.randint(0, (DIM_X - 1)))
+
 
 # sets depth of search used for heuristic scoring. 1 = Standard Warnsdorff heurstic
 # depth = 2 is Pohl's suggested value (can solve as large as 50x50 boards)
