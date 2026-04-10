@@ -39,7 +39,7 @@ DEPTH = 1
 
 
 ######################### INITIALIZING CHESSBOARD ######################################################## 
-game = Chessboard(GUI=True, render_delay_sec=0.02, grid_length=DIM,grid_width=DIM,starting_knight_pos=STARTING_POS, obstacle_boxes=0)
+game = Chessboard(GUI=True, render_delay_sec=0.02, grid_rows=DIM, grid_width=DIM, starting_knight_pos=STARTING_POS, obstacle_boxes=0)
 currentKnightPos, grid, placedKnights, done = game.execute('export')
 np.savetxt('initial_grid.txt', grid, fmt="%d")
 
