@@ -26,9 +26,9 @@ STARTING_POS = (random.randint(0, (DIM_Y - 1)), random.randint(0, (DIM_X - 1)))
 # depth = 2 is Pohl's suggested value (can solve as large as 50x50 boards)
 DEPTH = 1
 
-# set limit high enough for a 50x50 board (2500 moves) plus some buffer for helper functions.
-# adjust higher for larger NxN tests
-sys.setrecursionlimit(3000)
+# set limit high enough for a 128x128 board (16,384 squares) plus some buffer
+# for helper functions. Adjust higher for larger NxN tests
+sys.setrecursionlimit(20000)
 
 
 ######################################################################################
@@ -53,8 +53,10 @@ class KnightsTourAgent:
         self.grid_size = self.game.grid_rows * self.game.grid_cols
         self.grid_rows = self.game.grid_rows
         self.grid_cols = self.game.grid_cols
+        self.backtrack_count = 0
 
-        print(self.currentKnightPos, self.grid, self.placedKnights, self.done)
+        # print(self.currentKnightPos, self.grid, self.placedKnights,
+        # self.done)
 
 
     #AGENT CODE BELOW
@@ -146,7 +148,8 @@ class KnightsTourAgent:
             if self.pohl_solver(next_move, move_count + 1, k):
                 return True
 
-            # backtracking if we failed
+            # backtracking if we failed / we track wrong guesses
+            self.backtrack_count += 1
             self.game.execute("undo")
 
         return False
@@ -166,8 +169,8 @@ class KnightsTourAgent:
         end=time.time()
         self.done = self.game.checkGrid(self.game.grid)
 
-        self.print_game_results()
-        print(f"Solved with {end-start} seconds of execution time!")
+        # self.print_game_results()
+        # print(f"Solved with {end-start} seconds of execution time!")
 
         np.savetxt('grid.txt', self.grid, fmt="%d")
         with open("final_grid.txt", "w") as outfile:

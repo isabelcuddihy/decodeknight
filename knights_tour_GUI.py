@@ -13,7 +13,7 @@ class Chessboard:
         self.cellSize = 25
         self.cellWidth = self.grid_cols * self.cellSize
         self.cellHeight = self.grid_rows * self.cellSize
-        self.fps = 60
+        self.fps = 1000
         self.sleeptime = render_delay_sec
         self.currentKnightPos = (starting_knight_pos[0], starting_knight_pos[1]) # (y, x) format
         self.placedKnights = []
