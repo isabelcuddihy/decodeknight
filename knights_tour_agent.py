@@ -8,19 +8,27 @@ from knights_tour_GUI import *
 import sys
 
 ########################## CONTROL PANEL #################################################
-# adjust board dimensions (as square)
-DIM = 18
+
+# set limit high enough for a 50x50 board (2500 moves) plus some buffer for helper functions.
+# adjust higher for larger NxN tests
+########################## CONTROL PANEL #################################################
+# adjust board dimensions (as rectangle)
+DIM_X = 6 # columns
+DIM_Y = 6 # rows
+
+#4x6 didn't work but 5x6, 8x6, 8x16, 8x12, 13x11, 13x5, 6x5 did
 
 # randomizes starting position, change to fixed coord e.g. (0,0) for testing
-STARTING_POS = (random.randint(0, (DIM - 1)), random.randint(0, (DIM - 1)))
+STARTING_POS = (random.randint(0, (DIM_Y - 1)), random.randint(0, (DIM_X - 1)))
+
 
 # sets depth of search used for heuristic scoring. 1 = Standard Warnsdorff heurstic
 # depth = 2 is Pohl's suggested value (can solve as large as 50x50 boards)
 DEPTH = 1
 
-# set limit high enough for a 50x50 board (2500 moves) plus some buffer for helper functions.
-# adjust higher for larger NxN tests
-sys.setrecursionlimit(3000)
+# set limit high enough for a 128x128 board (16,384 squares) plus some buffer
+# for helper functions. Adjust higher for larger NxN tests
+sys.setrecursionlimit(20000)
 
 
 ######################################################################################
@@ -42,9 +50,13 @@ class KnightsTourAgent:
         np.savetxt('initial_grid.txt', self.grid, fmt="%d")
 
         self.currentKnightPos, self.grid, self.placedKnights, self.done = self.game.execute('export')
-        self.grid_size = self.grid.shape[0]
+        self.grid_size = self.game.grid_rows * self.game.grid_cols
+        self.grid_rows = self.game.grid_rows
+        self.grid_cols = self.game.grid_cols
+        self.backtrack_count = 0
 
-        print(self.currentKnightPos, self.grid, self.placedKnights, self.done)
+        # print(self.currentKnightPos, self.grid, self.placedKnights,
+        # self.done)
 
 
     #AGENT CODE BELOW
@@ -64,7 +76,6 @@ class KnightsTourAgent:
         from the current position that land on unvisited (-1) squares.
         """
         y, x = current_pos
-        grid_size = self.grid.shape[0] # assuming a square chessboard/numpy matrix
 
         # defining all 8 possible "L" knight steps
         possible_steps = [
@@ -78,7 +89,7 @@ class KnightsTourAgent:
             new_y, new_x = y + y1, x + x1
 
             # check if the move is within the grid boundaries
-            if 0 <= new_x < grid_size and 0 <= new_y < grid_size:
+            if 0 <= new_x < self.grid_cols and 0 <= new_y < self.grid_rows:
 
                 # check if the cell is unvisited (-1)
                 if self.grid[new_y, new_x] == -1:
@@ -111,7 +122,7 @@ class KnightsTourAgent:
 
 
     def pohl_solver(self,current_pos, move_count, k=1):
-        if move_count == (self.game.gridSize * self.game.gridSize):
+        if move_count == (self.game.grid_cols * self.game.grid_rows):
             return True
 
         # Get valid moves using the live game grid
@@ -137,7 +148,8 @@ class KnightsTourAgent:
             if self.pohl_solver(next_move, move_count + 1, k):
                 return True
 
-            # backtracking if we failed
+            # backtracking if we failed / we track wrong guesses
+            self.backtrack_count += 1
             self.game.execute("undo")
 
         return False
@@ -155,23 +167,20 @@ class KnightsTourAgent:
         self.pohl_solver(self.currentKnightPos, len(self.placedKnights),  k=DEPTH)
 
         end=time.time()
+        self.done = self.game.checkGrid(self.game.grid)
 
-        self.print_game_results()
-        print(f"Solved with {end-start} seconds of execution time!")
-        self.game._main()
-
+        # self.print_game_results()
+        # print(f"Solved with {end-start} seconds of execution time!")
 
         np.savetxt('grid.txt', self.grid, fmt="%d")
         with open("final_grid.txt", "w") as outfile:
             outfile.write(str(self.placedKnights))
 
 
-
-
 if __name__ == '__main__':
     print("-----Welcome to the Knights Tour---- \n")
-    agent = KnightsTourAgent(Chessboard(GUI=True, render_delay_sec=0.02, grid_length=DIM, grid_width=DIM,
-                               starting_knight_pos=STARTING_POS, obstacle_boxes=0))
+    agent = KnightsTourAgent(Chessboard(GUI=False, render_delay_sec=0.02, grid_rows=DIM_Y, grid_cols=DIM_X,
+                                        starting_knight_pos=STARTING_POS, obstacle_boxes=0))
     agent.knights_tour()
 
 ######################### OUTDATED CODE ################################
